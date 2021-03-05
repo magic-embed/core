@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "knex": "ts-node ./node_modules/.bin/knex",
+    "up": "npm run knex -- migrate:latest --debug --knexfile knexfile.ts",
+    "up:single": "npm run knex -- migrate:up $name --debug --knexfile knexfile.ts",
+    "down": "npm run knex -- migrate:rollback --debug  --all --knexfile knexfile.ts",
+    "down:single": "npm run knex -- migrate:down $name --debug --knexfile knexfile.ts",
+    "create:migration": "knex migrate:make $name -x ts/$config_type",
+    "create:seed": "knex seed:make -x ts $name",
+    "up:seed": "npm run knex -- seed:run"
   },
   "repository": {
     "type": "git",
@@ -18,9 +25,13 @@
   "homepage": "https://github.com/magic-embed/core#readme",
   "devDependencies": {
     "@types/node": "^14.14.31",
-    "nodemon": "^2.0.7",
+    "dotenv": "^8.2.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
+  },
+  "dependencies": {
+    "knex": "^0.95.1",
+    "pg": "^8.5.1"
   }
 }
