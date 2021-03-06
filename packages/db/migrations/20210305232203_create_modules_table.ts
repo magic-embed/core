@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
       "id" SERIAL PRIMARY KEY,
       "project_id" INT REFERENCES projects(id),
       "name" VARCHAR (50) NOT NULL,
-      "path" VARCHAR (20) NOT NULL,
+      "path" VARCHAR (200) NOT NULL,
       "sha" VARCHAR(50) NOT NULL,
       "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
