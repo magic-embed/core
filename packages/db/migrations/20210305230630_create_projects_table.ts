@@ -1,29 +1,28 @@
 import { Knex } from 'knex';
-import {
-  triggerSetTimestampDefinition,
-  createSetTimestampTrigger,
-} from '../triggers/set-timestamp';
+import { createSetTimestampTrigger } from '../triggers/set-timestamp';
 
 export async function up(knex: Knex): Promise<void> {
   const SQL = `
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS projects (
       "id" SERIAL PRIMARY KEY,
-      "email" VARCHAR (100),
+      "name" VARCHAR (50) NOT NULL,
+      "platform" VARCHAR (20) NOT NULL,
+      "platform_id" VARCHAR(50) NOT NULL,
       "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-      "confirmed_at" TIMESTAMPTZ DEFAULT NULL,
-      UNIQUE("email")
+
+      UNIQUE ("platform", "name")
     );
   `;
-  await knex.raw(triggerSetTimestampDefinition);
+
   await knex.raw(SQL);
-  await knex.raw(createSetTimestampTrigger('users'));
+  await knex.raw(createSetTimestampTrigger('projects'));
 }
 
 export async function down(knex: Knex): Promise<void> {
   const SQL = `
-    DROP TABLE users;
+    DROP TABLE projects;
   `;
   await knex.raw(SQL);
 }

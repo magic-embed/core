@@ -9,7 +9,7 @@
     "up:single": "npm run knex -- migrate:up $name --debug --knexfile knexfile.ts",
     "down": "npm run knex -- migrate:rollback --debug  --all --knexfile knexfile.ts",
     "down:single": "npm run knex -- migrate:down $name --debug --knexfile knexfile.ts",
-    "create:migration": "knex migrate:make $name -x ts/$config_type",
+    "create:migration": "knex migrate:make $name -x ts",
     "create:seed": "knex seed:make -x ts $name",
     "up:seed": "npm run knex -- seed:run"
   },
