@@ -1,5 +1,7 @@
 import Fastify, { FastifyInstance, RouteShorthandOptions } from 'fastify';
+import { createClient } from '@magic-embed/db';
 
+const dbClient = createClient();
 const server: FastifyInstance = Fastify({});
 
 const opts: RouteShorthandOptions = {
@@ -17,8 +19,16 @@ const opts: RouteShorthandOptions = {
   },
 };
 
-server.get('/ping', opts, async (request, reply) => {
-  return { pong: 'it worked!' };
+server.get('/', opts, async (request, reply) => {
+  try {
+    const users = await dbClient().select('*').from('migrations');
+    return reply
+      .code(200)
+      .serializer(JSON.stringify)
+      .send({ users });
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 const start = async () => {
