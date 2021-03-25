@@ -1,5 +1,5 @@
 {
-  "include": ["migrations/**/*", "seeds/**/*"],
+  "include": ["migrations/**/*", "seeds/**/*", "node_modules/knex"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "baseUrl": ".",

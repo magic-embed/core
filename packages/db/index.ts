@@ -1,5 +1,5 @@
 import knex, { Knex } from 'knex';
-import config from './knexfile';
+import knexfile from './knexfile';
 
-export const createClient = (options?: Knex.Config): Knex =>
-  knex({ ...config, ...options, debug: true });
+export const createClient = (config?: Knex.Config): Knex =>
+  knex({ debug: true, ...knexfile, ...config });
