@@ -5,7 +5,7 @@ import { magicLink } from './magic-link';
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET as string;
 
-export function passportSetup(instance: FastifyInstance) {
+export async function passportSetup(instance: FastifyInstance) {
   instance.register(fastifySecureSession, {
     key: Buffer.from(COOKIE_SECRET, 'hex'),
     cookieName: 'session',

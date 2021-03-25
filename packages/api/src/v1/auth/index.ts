@@ -7,19 +7,19 @@ import { magicLink } from 'src/passport/magic-link';
 export async function auth(fastify: FastifyInstance) {
   fastify.register(
     async function (fastify) {
-      fastify.get(
+      fastify.post(
         '/',
         {
           schema: login.schema,
         },
         login
       );
-      fastify.post(
+      fastify.get(
         '/callback',
         { preValidation: passport.authenticate('magicLink', { authInfo: false }) },
         callback as RouteHandlerMethod
       );
     },
-    { prefix: '/users' }
+    { prefix: '/auth' }
   );
 }
