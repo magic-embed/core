@@ -2,7 +2,7 @@ import { FastifyInstance, RouteHandlerMethod } from 'fastify';
 import passport from 'fastify-passport';
 import { login } from './login';
 import { callback } from './callback';
-import { magicLink } from 'src/passport/magic-link';
+import STRATEGY from '../../passport/strategy';
 
 export async function auth(fastify: FastifyInstance) {
   fastify.register(
@@ -16,7 +16,7 @@ export async function auth(fastify: FastifyInstance) {
       );
       fastify.get(
         '/callback',
-        { preValidation: passport.authenticate('magicLink', { authInfo: false }) },
+        { preValidation: passport.authenticate(STRATEGY, { authInfo: false }) },
         callback as RouteHandlerMethod
       );
     },

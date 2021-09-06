@@ -1,11 +1,12 @@
-import { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 import passport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
 import { magicLink } from './magic-link';
+import STRATEGY from './strategy';
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET as string;
 
-export async function passportSetup(instance: FastifyInstance) {
+export const passportSetup = fp(async (instance) => {
   instance.register(fastifySecureSession, {
     key: Buffer.from(COOKIE_SECRET, 'hex'),
     cookieName: 'session',
@@ -18,7 +19,6 @@ export async function passportSetup(instance: FastifyInstance) {
   });
   instance.register(passport.initialize());
   instance.register(passport.secureSession());
-  passport.use('magicLink', magicLink);
 
   passport.registerUserSerializer(async (passportUser: { email: string }) => {
     const { email } = passportUser;
@@ -26,20 +26,22 @@ export async function passportSetup(instance: FastifyInstance) {
       .db('users')
       .insert({
         email,
-        confirmedAt: new Date(),
+        confirmed_at: new Date(),
       })
       .onConflict('email')
       .ignore();
 
     const [user] = await instance
-      .db<{ id: string }>('users')
-      .select('id')
-      .where('email = ?', email);
+      .db<{ id: string, email: string }>('users')
+      .where('email', email)
+      .select('id');
 
     return user.id;
   });
 
-  passport.registerUserDeserializer(async (passportUser) => {
-    return passportUser;
+  passport.registerUserDeserializer(async (userId: string) => {
+    const [user] = await instance.db('users').where('id', userId);
+    return user;
   });
-}
+  passport.use(STRATEGY, magicLink);
+});

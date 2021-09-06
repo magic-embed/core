@@ -7,9 +7,9 @@ if (!process.env.MAGIC_LINK_SECRET)
 
 export const magicLink = new MagicLoginStrategy({
   secret: process.env.MAGIC_LINK_SECRET,
-  callbackUrl: '/api/auth/magiclink/callback',
+  callbackUrl: 'callback',
   sendMagicLink: async (destination, href, code, req) => {
-    const link = `${getRequestOrigin(req)}${href}`;
+    const link = `${getRequestOrigin(req)}${req.url}${href}`;
 
     await sendEmail({
       to: destination,
