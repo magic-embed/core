@@ -6,10 +6,18 @@ import Mercurius from 'mercurius';
 import { createClient } from '@magic-embed/db';
 import { passportSetup } from './passport';
 import { schema } from './graphql/schema';
+import { getRequestOrigin } from './utils/get-request-origin';
+import passport from 'fastify-passport';
 
 declare module 'fastify' {
   interface FastifyInstance {
     db: ReturnType<typeof createClient>;
+  }
+}
+
+declare module 'mercurius' {
+  interface MercuriusContext {
+    origin: ReturnType<typeof getRequestOrigin>;
   }
 }
 
@@ -30,12 +38,24 @@ const setup = (): FastifyInstance => {
       },
     },
   });
-  instance.register(Mercurius, { schema, graphiql: true });
 
   const dbClient = createClient();
   instance.decorate('db', dbClient);
 
   instance.register(passportSetup);
+  instance.register(
+    Mercurius,
+    {
+      schema,
+      graphiql: true,
+      async context(request) {
+        return {
+          user: request.user, // always null
+          origin: getRequestOrigin(request)
+        };
+      }
+    }
+  );
 
   return instance;
 };

@@ -3,6 +3,14 @@ import passport from 'fastify-passport';
 import fastifySecureSession from 'fastify-secure-session';
 import { magicLink } from './magic-link';
 import STRATEGY from './strategy';
+import { NexusGenRootTypes } from 'src/graphql/nexus-types.generated';
+
+type User = NexusGenRootTypes['User'];
+declare module 'fastify' {
+  interface PassportUser extends User {
+    redirect: string
+  }
+}
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET as string;
 
@@ -20,8 +28,8 @@ export const passportSetup = fp(async (instance) => {
   instance.register(passport.initialize());
   instance.register(passport.secureSession());
 
-  passport.registerUserSerializer(async (passportUser: { email: string }) => {
-    const { email } = passportUser;
+  passport.registerUserSerializer(async (passportUser: { email: string, redirect: string }) => {
+    const { email, redirect } = passportUser;
     await instance
       .db('users')
       .insert({
@@ -36,12 +44,13 @@ export const passportSetup = fp(async (instance) => {
       .where('email', email)
       .select('id');
 
-    return user.id;
+    return { userId: user.id, redirect };
   });
 
-  passport.registerUserDeserializer(async (userId: string) => {
+  passport.registerUserDeserializer(async ({ userId, redirect }: { userId: string, redirect: string }) => {
     const [user] = await instance.db('users').where('id', userId);
-    return user;
+    return { ...user, redirect };
   });
+
   passport.use(STRATEGY, magicLink);
 });

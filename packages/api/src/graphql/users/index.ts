@@ -14,16 +14,15 @@ const queries = extendType({
   definition: (t) => {
     t.field('currentUser', {
       type: 'User',
-      resolve: (_, __, ctx) => {
-        // if (!ctx.user?.id) return null;
+      resolve: async (e, args, ctx) => {
+        const user = ctx.reply.request.user;
+        if (!user?.id) return null;
 
-        // return prisma.user.findUnique({
-        //   where: {
-        //     id: ctx.user.id,
-        //   },
-        // });
-        const getFirstUser = (db: any) => db.table('users').first();
-        return ctx.app.db().modify<NexusGenRootTypes['User']>(getFirstUser);
+        const [currentUser] = await ctx.app.db<NexusGenRootTypes['User']>('users')
+          .where('id', user.id)
+          .select();
+
+        return currentUser;
       },
     });
   },
@@ -36,15 +35,19 @@ const mutations = extendType({
       type: 'User',
       args: {
         userId: nonNull(stringArg()),
-        name: stringArg(),
+        email: stringArg(),
       },
-      resolve: async (_, { userId, name }, ctx) => {
-        // if (!ctx.user?.id || userId !== ctx.user.id) return null;
+      resolve: async (_, { userId, email }, ctx) => {
+        const user = ctx.reply.request.user;
+        if (!user?.id || userId !== user.id) return null;
 
         // return await prisma.user.update({
         //   where: { id: userId },
         //   data: { name },
         // });
+        await ctx.app.db<NexusGenRootTypes['User']>('users')
+          .where('id', userId)
+          .update('email', email);
         return {};
       },
     });

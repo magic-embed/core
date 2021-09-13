@@ -1,4 +1,4 @@
-import { IncomingMessage } from "http";
+import { FastifyRequest } from 'fastify';
 
 /**
  * Reliably get a request's origin, even when deployed on serverless functions
@@ -10,7 +10,7 @@ import { IncomingMessage } from "http";
  * }
  * ```
  */
-export const getRequestOrigin = (req: IncomingMessage): string =>
+export const getRequestOrigin = (req: FastifyRequest): string =>
   // The x-forwarded-proto header is the only reliable way to determine HTTP vs HTTPS
   // with Vercel serverless functions and Netlify functions.
   `${req.headers["x-forwarded-proto"] === `https` ? `https` : `http`}://${

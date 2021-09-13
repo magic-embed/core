@@ -3,7 +3,7 @@
 
 
 type Mutation {
-  updateUser(name: String, userId: String!): User
+  updateUser(email: String, userId: String!): User
 }
 
 type Query {

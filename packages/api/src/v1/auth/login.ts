@@ -10,8 +10,8 @@ export async function login(
   const proxyReply = new Proxy(reply, {
     get(target, prop) {
       if (prop === 'json') {
-        return (...args: any[]) => {
-          reply.send(...args);
+        return (response: { success: boolean; code: number; error: string }) => {
+          reply.send(response);
         };
       }
       // @ts-ignore

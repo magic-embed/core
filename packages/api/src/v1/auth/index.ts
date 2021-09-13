@@ -16,9 +16,16 @@ export async function auth(fastify: FastifyInstance) {
       );
       fastify.get(
         '/callback',
-        { preValidation: passport.authenticate(STRATEGY, { authInfo: false }) },
+        { preValidation: passport.authenticate(STRATEGY, { session: false }) },
         callback as RouteHandlerMethod
       );
+      fastify.get(
+        '/test',
+        {},
+        function (request, reply) {
+          reply.send(`Hello, ${JSON.stringify(request.user)}`);
+        }
+      )
     },
     { prefix: '/auth' }
   );
