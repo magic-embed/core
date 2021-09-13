@@ -2,6 +2,9 @@
 
 Repository to hold all migrations and seeds for the database.
 
+## Install
+Copy the contents of `.env.sample` into a `.env` file.
+
 ## Migrations
 
 ### Create a Migration
